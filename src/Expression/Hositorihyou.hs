@@ -56,6 +56,7 @@ len = \ case
 []       ・ ys = ys
 (x : xs) ・ ys = x : (xs ・ ys)
 
+infixr 5 ・
 -- |
 -- εは連接演算の単位元
 --
