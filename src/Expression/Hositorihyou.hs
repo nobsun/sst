@@ -53,7 +53,8 @@ len = \ case
 -- 連接
 -- 
 (・) :: Hositorihyou -> Hositorihyou -> Hositorihyou
-(・) = (++)
+[]       ・ ys = ys
+(x : xs) ・ ys = x : (xs ・ ys)
 
 -- |
 -- εは連接演算の単位元
@@ -93,7 +94,7 @@ len = \ case
 --    α ・ (β ・ γ)
 
 -- |
--- 左簡約法則 (定理 2.2)
+-- 左簡約法則(left cancelation law) (定理 2.2)
 --
 -- α ・ β ≡ α ・ γ ならば β ≡ γ
 --
