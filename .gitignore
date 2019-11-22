@@ -1,4 +1,5 @@
 .stack-work/
+stack.yaml.lock
 sst.cabal
 error.log
 core
