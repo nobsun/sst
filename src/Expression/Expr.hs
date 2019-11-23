@@ -15,7 +15,7 @@ import Expression.Encodable
 data Expr 
   = Leaf
   | Expr :^: Expr
-
+     
 instance Encodable Expr Hositorihyou where
   encoder = Encoder enc dec
     where
