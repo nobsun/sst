@@ -10,6 +10,8 @@ extra-source-files:
 - README.md
 - ChangeLog.md
 
+ghc-options: -pgmL markdown-unlit
+
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
 # category:            Experiment
@@ -27,6 +29,8 @@ dependencies:
 - utf8-string
 - hspec
 - main-tester
+- free
+- recursion-schemes
 
 library:
   source-dirs: src
