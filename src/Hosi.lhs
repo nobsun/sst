@@ -3,20 +3,19 @@ marp: true
 
 ---
 
+# 星取表
+
 ```haskell
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NPlusKPatterns #-}
 module Hosi where
 
-import Data.List (genericLength)
 import Numeric.Natural
 import Prelude hiding (length, take, drop)
 ```
 
 ---
-
-## 星取表
 
 > 本章で扱う記号は，本質的には，○と●だけである．
 > これらの記号をそれぞれ，白星，黒星とよぶことにする．
@@ -24,7 +23,7 @@ import Prelude hiding (length, take, drop)
 > これらふたつの記号が本章での対象記号である．
 
 具象構文の表現は，記号列です．
-2つの記号のみからなる記号列を考える．
+2つの記号のみからなる記号列を考えています．
 
 ---
 
@@ -138,6 +137,8 @@ length = \ case
 (・) :: Hositorihyou -> Hositorihyou -> Hositorihyou
 []     ・ ys = ys
 (x:xs) ・ ys = x : (xs ・ ys)
+
+infixr 5 ・
 ```
 
 ---
