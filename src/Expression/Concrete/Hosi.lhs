@@ -9,7 +9,7 @@ marp: true
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NPlusKPatterns #-}
-module Hosi where
+module Expression.Concrete.Hosi where
 
 import Numeric.Natural
 import Prelude hiding (length, take, drop)
@@ -17,15 +17,7 @@ import Prelude hiding (length, take, drop)
 
 ---
 
-> 本章で扱う記号は，本質的には，○と●だけである．
-> これらの記号をそれぞれ，白星，黒星とよぶことにする．
-> 白星，黒星を総称して星という．
-> これらふたつの記号が本章での対象記号である．
-
-具象構文の表現は，記号列です．
-2つの記号のみからなる記号列を考えています．
-
----
+2つの記号，黒星 $●$ と白星 $○$（総称して星という）を定義します．
 
 ```haskell
 data Hosi
@@ -51,10 +43,7 @@ instance Read Hosi where
 ```
 ---
 
-次に星取表を定義します．
-
-> 星を有限個左から右へならべたものを**星取表**とよぶ．
-
+次に星取表（星を有限個左から右へ並べたもの）を定義します．
 星取表は，``[Hosi]``すなわち``Hosi``を要素とするリストとしましょう．
 
 ```haskell
@@ -83,34 +72,23 @@ instance {-# Overlapping #-} Read Hositorihyou where
 
 ### 星取表の相等性
 
-星取表は星のリストとしたので，星取表も``Eq``クラスのインスタンスになります．
+星取表は星のリストで，星``Hosi``は``Eq``クラスのインスタンスなので，星取表``[Hosi]``も``Eq``クラスのインスタンスになります．
 したがって，2つの星取表の相等性は，``(==)``で検査できます．
 
 ```
-(==)   :: Hositorihyou -> Hositorihyou -> Bool
+(==)   :: Eq a => [a] -> [a] -> Bool
 []     == []     = True
 (x:xs) == (y:ys) = x == y && xs == ys
 _      == _      = False 
 ```
 
----
-
-> $\alpha$を長さ$n$の星取表とするとき，各 $i\;(1\le i \le n)$ に対して，$\alpha$ の中で左から $i$ 番目に書かれている記号を $\alpha_{i}$ で表し，$\alpha$ の**第 $i$ 要素**($i$-th element)とよぶ．
-> (中略)
-> 同じ長さ$n$を持ち，各$i(1 \le i \le n)$について第$i$要素がすべて同じ記号であるふたつの星取表は**同じ**(identical)星取表であるという．
-> 星取表$\alpha$と$\beta$が同じ星取表でることを$\alpha \equiv \beta$で表す．$\alpha$と$\beta$が同じでないときは，$\alpha$と$\beta$は**異なる**(different)といって，$\alpha \not\equiv \beta$であらわす
-
-
-$\alpha \equiv \beta$ $\Leftrightarrow$  Haskell上で``α == β``が``True`` がいえます．
+$\alpha \equiv \beta$ $\Leftrightarrow$  Haskell上で``α == β`` $\equiv$ ``True`` 
 
 ---
 
 ### 星取表の長さ
 
-> 星取表$\alpha$に現れる白星，黒星の総数を$\alpha$の長さ（length）といい，$|\alpha|$で表す．
-たとえば，○●●は長さ3の星取表である．また長さ0の星取表を空列（empty sequence）とよび $\epsilon$ で表す．
-
-星取表の長さは，リストの長さで表せます．
+星取表の長さは，リストの長さで表せますが，ここでは独自に定義しておきます．
 
 ```haskell
 length :: Hositorihyou -> Natural
@@ -126,12 +104,7 @@ length = \ case
 
 ### 星取表の連接
 
-
-> $\alpha$ と $\beta$ を星取表とするとき，$|\gamma| = |\alpha| + |\beta|$ で
-> $$ \gamma_i \equiv \left\{ \begin{array}{ll} \alpha_i & (i \le |\alpha|のとき) \\ \beta_i & (i > |\alpha| のとき) \end{array}\right. $$
-> となるような $\gamma$ が一意に定まる．この $\gamma$ を $\alpha$ と $\beta$ の**連接**(juxtaposition)といい $\alpha \cdot \beta$ で表す．
-
-連接はHaskellでは以下のように定義します．
+星取表の連接演算は，リストの連接で表せますが，ここでは独自に定義しておきます．
 
 ```haskell
 (・) :: Hositorihyou -> Hositorihyou -> Hositorihyou
@@ -143,7 +116,7 @@ infixr 5 ・
 
 ---
 
-連接が見たすべき前述の条件は以下の条件と同等です．
+連接が満すべき条件は以下のとおりです．
 
 ```
 γ = α ・ β であるとき
@@ -247,8 +220,6 @@ drop (n+1) (x:xs) = drop n xs
 ```
 
 ---
-
-> 連接の定義から，任意の星取表 $\alpha$ について，$\epsilon ・ \alpha \equiv \alpha ・ \epsilon$ となることがわかる．すなわち，空列は連接に関する**単位元**(identity element)になる．連接はまた次の**左簡約法則**(left cancelation law)を満たす．
 
 ### 左簡約法則(left cancelation law)
 

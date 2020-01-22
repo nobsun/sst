@@ -9,12 +9,17 @@ marp: true
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NPlusKPatterns #-}
-module Siki where
+module Expression.Concrete.Siki
+  ( Siki ()
+  , unsiki
+  , _E1
+  , _E2
+  ) where
 
 import Control.Arrow ((***))
 import Data.Bool (bool)
 import Numeric.Natural
-import Hosi
+import Expression.Concrete.Hosi
 
 ```
 
@@ -30,7 +35,10 @@ import Hosi
 ---
 
 ```haskell
-newtype Siki a = Siki { unsiki :: a }
+newtype Siki a = Siki a
+
+unsiki :: Siki Hositorihyou -> Hositorihyou
+unsiki (Siki hs) = hs
 
 _E1 :: Siki Hositorihyou
 _E1 = Siki [Kuro]
