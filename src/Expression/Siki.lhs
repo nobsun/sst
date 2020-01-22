@@ -9,17 +9,19 @@ marp: true
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NPlusKPatterns #-}
-module Expression.Concrete.Siki
+module Expression.Siki
   ( Siki ()
   , unsiki
   , _E1
   , _E2
+  , siki
+  , splits
   ) where
 
 import Control.Arrow ((***))
 import Data.Bool (bool)
 import Numeric.Natural
-import Expression.Concrete.Hosi
+import Expression.Hosi
 
 ```
 

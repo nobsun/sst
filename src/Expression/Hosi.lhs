@@ -9,7 +9,7 @@ marp: true
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NPlusKPatterns #-}
-module Expression.Concrete.Hosi where
+module Expression.Hosi where
 
 import Numeric.Natural
 import Prelude hiding (length, take, drop)

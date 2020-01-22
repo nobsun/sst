@@ -6,13 +6,13 @@ marp: true
 ```haskell
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE TypeFamilies #-}
-module Expression.Abstract.Tree
+module Expression.Tree
   ( Tree (..)
-  
+  , TreeF (..)
   ) where
 
+import Text.ParserCombinators.ReadP
 import Data.Functor.Foldable
-import Expression.Concrete
 
 ```
 ---
@@ -38,10 +38,10 @@ instance Show Tree where
     s :^: t -> ('(' :) . shows s . ('.' :) . shows t . (')' :)
 
 instance Read Tree where
-  readsPrec _ = readP_to_readS pTree
+  readsPrec _ = readP_to_S rTree
 
 rTree :: ReadP Tree
-rTree = pLeaf +++ pFork
+rTree = rLeaf +++ rFork
 
 rLeaf :: ReadP Tree
 rLeaf = Leaf <$ char '●'
@@ -75,27 +75,5 @@ instance Recursive Tree where
 instance Corecursive Tree where
   embed = \ case
     LeafF    -> Leaf
-    s :^^: t -> s :^: t  
-```
-
----
-
-```haskell
-fromTreeForm :: Tree -> Siki Hositorihyou
-fromTreeForm = cata phi
-  where
-    phi = \ case
-      LeafF -> _E1
-      α :^^: β -> _E2 α β
-
-toTreeForm :: Siki Hositorihyou -> Tree
-toTreeForm = ana psi
-  where
-    psi e = case unsiki e of
-      Kuro:[] -> LeafF
-      Siro:α -> β :^^: γ
-        where
-          (β,γ) = head [ (unsiki l, unsiki r) 
-                       | (Just l, Just r) <- map (siki *** siki) (splits α)]
-
+    s :^^: t -> s :^: t
 ```

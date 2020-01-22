@@ -5,14 +5,15 @@ marp: true
 
 ```haskell
 {-# LANGUAGE LambdaCase #-}
-module Expression.Abstract.Expr
+module Expression.Expr
   (
   ) where
 
+import Control.Arrow ((***))
 import Data.Functor.Foldable
-import Expression.Concrete.Hosi
-import Expression.Concrete.Siki
-import Expression.Abstract.Tree
+import Expression.Hosi
+import Expression.Siki
+import Expression.Tree
 ```
 
 ---
@@ -20,7 +21,7 @@ import Expression.Abstract.Tree
 式の具象構文は``Siki Hositorihyou``という特別な星取表，すなわち一次元の記号列で表現されています．
 式を数学的対象とするとき，その構造は全二分木と見なせます．すなわち，式の抽象構文は``Tree``と同型（Isomorphic）です．そこで改めて，式の抽象構文を``Tree``とみなします．
 
-```haskel
+```haskell
 type Expr = Tree
 ```
 
