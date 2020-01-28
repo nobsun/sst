@@ -139,4 +139,4 @@ splits = \ case
 
 ---
 
-> $\alpha$ と $\beta$ が式のとき $○\cdot\alpha\cdot\beta$ の形の式を``(α . β)``で表し，$\alpha$ と $\beta$ の**点対**（dotted pair）とよぶ．このとき，$\alpha$，$\beta$ をそれぞれ点対``(α . β)``の**左要素**（left element），**右要素**（right element）という．点対は，より視覚に訴える形で，以下のように**木形式**（tree form）で表現することもある．
+> $\alpha$ と $\beta$ が式のとき $○\cdot\alpha\cdot\beta$ の形の式を``(α . β)``で表し，$\alpha$ と $\beta$ の**点対**（dotted pair）とよぶ．このとき，$\alpha$，$\beta$ をそれぞれ点対``(α . β)``の**左要素**（left element），**右要素**（right element）という．

@@ -6,7 +6,11 @@ marp: true
 ```haskell
 {-# LANGUAGE LambdaCase #-}
 module Expression.Expr
-  (
+  ( module Expression.Siki
+  , module Expression.Tree
+  , Expr
+  , fromExpr
+  , toExpr
   ) where
 
 import Control.Arrow ((***))
