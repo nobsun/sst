@@ -8,13 +8,17 @@ marp: true
 ```haskell
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FlexibleInstances #-}
+
 module Expression.MExpr
   (
   ) where
 
 import Numeric.Natural
 import Text.ParserCombinators.ReadP
-import Data.Functor.Foldable
+import qualified Data.Functor.Foldable as F
+import Data.Functor.Foldable hiding (ListF (..))
 import Expression.Hosi
 import Expression.Expr
 import Expression.MSiki
@@ -162,3 +166,105 @@ size = cata phi
       QuoteF t  -> succ t
       PairF s t -> succ (s + t)
 ```
+
+---
+
+### リストの具象構文
+
+```haskell
+newtype MEList a = MEList a
+
+unmelist :: MEList a -> a
+unmelist (MEList ls) = ls
+
+_L1 :: MEList (MSiki (Siki Hositorihyou))
+_L1 = MEList _M2
+
+_L2 :: MSiki (Siki Hositorihyou)
+    -> MEList (MSiki (Siki Hositorihyou)) -> MEList (MSiki (Siki Hositorihyou))
+_L2 h t = MEList (_M4 h (unmelist t)) 
+```
+
+---
+
+### リストの抽象構文
+
+```haskell
+data List a 
+  = Nil
+  | Cons a (List a)
+  deriving (Eq)
+
+type instance Base (List a) = F.ListF a
+```
+
+---
+
+### リストの再帰図式
+
+```haskell
+instance Recursive (List MExpr) where
+  project = \ case
+    Nil      -> F.Nil
+    Cons s l -> F.Cons s l 
+
+instance Corecursive (List MExpr) where
+  embed = \ case
+    F.Nil      -> Nil
+    F.Cons s l -> Cons s l  
+```
+
+---
+
+リストかどうかの判定
+
+```haskell
+isList :: MExpr -> Bool
+isList = cata phi
+  where
+    phi = \ case
+      UnitF     -> True
+      PairF _ t -> t
+      _         -> False
+```
+
+---
+
+```haskell
+fromList :: List MExpr -> MEList (MSiki (Siki Hositorihyou))
+fromList = cata phi
+  where
+    phi = \ case
+      F.Nil      -> _L1
+      F.Cons s t -> _L2 (fromMExpr s) t
+
+fromList' :: List MExpr -> MExpr
+fromList' = \ case
+  Nil      -> Unit
+  Cons h t -> Pair h (fromList' t)
+```
+---
+
+```haskell
+toList :: MEList (MSiki (Siki Hositorihyou)) -> List MExpr
+toList ls = toList' (toMExpr (unmelist ls))
+
+toList' :: MExpr -> List MExpr
+toList' = ana psi
+  where
+    psi = \ case
+      Unit     -> F.Nil
+      Pair h t -> F.Cons h t 
+```
+
+---
+
+要素かどうか（要素であるという関係があるかどうか）の判定
+
+```haskell
+(∈) :: MExpr -> List MExpr -> Bool
+_ ∈ Nil      = False
+s ∈ Cons h t = s == h || s ∈ t
+```
+
+---
