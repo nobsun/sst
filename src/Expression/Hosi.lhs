@@ -6,6 +6,12 @@ marp: true
 # 星取表
 
 ```haskell
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE TypeOperators #-}
+
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NPlusKPatterns #-}
@@ -13,6 +19,9 @@ module Expression.Hosi where
 
 import Numeric.Natural
 import Prelude hiding (length, take, drop)
+
+import Utility.Singleton
+import Data.Typeable
 ```
 
 ---
@@ -43,6 +52,32 @@ instance Read Hosi where
 ```
 ---
 
+```haskell
+data instance Sing (a :: Hosi) where
+  SKuro :: Sing 'Kuro
+  SSiro :: Sing 'Siro
+
+instance SingKind Hosi where
+  type Demote Hosi = Hosi
+  toSing Kuro = SomeSing SKuro
+  toSing Siro = SomeSing SSiro
+  fromSing SKuro = Kuro
+  fromSing SSiro = Siro
+
+instance SingI 'Kuro where
+  sing = SKuro
+
+instance SingI 'Siro where
+  sing = SSiro
+
+instance SDecide Hosi where
+  SKuro %~ SKuro = Proved Refl
+  SSiro %~ SSiro = Proved Refl
+  _     %~ _     = Disproved (const undefined)
+```
+
+---
+
 次に星取表（星を有限個左から右へ並べたもの）を定義します．
 星取表は，``[Hosi]``すなわち``Hosi``を要素とするリストとしましょう．
 
@@ -68,6 +103,12 @@ instance {-# Overlapping #-} Read Hositorihyou where
     '○':rs -> [(Siro : hs, rs') | (hs, rs') <- readsPrec 0 rs]
     _       -> []
 ```
+---
+
+```haskell
+
+```
+
 ---
 
 ### 星取表の相等性
@@ -98,6 +139,13 @@ length = \ case
 
 ε :: [Hosi]
 ε = []
+```
+
+---
+
+```
+type family Length (xs :: Hositorihyou)
+type instance Length '[] 
 ```
 
 ---

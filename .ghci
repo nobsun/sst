@@ -2,3 +2,17 @@
 :set prompt ">>> "
 :set -interactive-print=Text.Show.Unicode.uprint
 :set +t
+:set -XDataKinds
+:set -XFlexibleContexts
+:set -XFlexibleInstances
+:set -XGADTs
+:set -XKindSignatures
+:set -XPolyKinds
+:set -XRankNTypes
+:set -XScopedTypeVariables
+:set -XTypeFamilies
+:set -XTypeFamilyDependencies
+:set -XTypeInType
+:set -XTypeOperators
+:set -XTypeApplications
+:set -XUndecidableInstances
