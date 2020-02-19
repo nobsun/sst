@@ -5,26 +5,50 @@ marp: true
 
 # 星取表
 
+言語拡張
+
 ```haskell
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE TypeOperators #-}
-
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NPlusKPatterns #-}
-module Expression.Hosi where
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeFamilyDependencies #-}
+{-# LANGUAGE TypeInType #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE InstanceSigs #-}
+```
+---
 
-import Numeric.Natural
+モジュール宣言とインポート宣言
+
+```haskell
+module Expression.Hosi
+  where
+
 import Prelude hiding (length, take, drop)
+import Data.Kind (Type)
+import Data.Typeable
+import Data.Void
+import Data.Maybe (mapMaybe)
+import Unsafe.Coerce (unsafeCoerce)
+import Numeric.Natural
 
 import Utility.Singleton
-import Data.Typeable
 ```
 
 ---
+
+## 星
 
 2つの記号，黒星 $●$ と白星 $○$（総称して星という）を定義します．
 
@@ -37,7 +61,7 @@ data Hosi
 
 ---
 
-利便のため，星（``Hosi``）を``Show``および``Read``型クラスのインスタンスとしておきます．
+星（``Hosi``）を``Show``および``Read``型クラスのインスタンスとしておきます．
 
 ```haskell
 instance Show Hosi where
@@ -52,6 +76,9 @@ instance Read Hosi where
 ```
 ---
 
+データを型に，型をカインドに昇格tたので，カインド``Hosi``に対応するシングルトンを定義しておきましょう．
+シングルトンは性質の証明のために使います．
+
 ```haskell
 data instance Sing (a :: Hosi) where
   SKuro :: Sing 'Kuro
@@ -63,7 +90,11 @@ instance SingKind Hosi where
   toSing Siro = SomeSing SSiro
   fromSing SKuro = Kuro
   fromSing SSiro = Siro
+```
 
+---
+
+```haskell
 instance SingI 'Kuro where
   sing = SKuro
 
@@ -78,6 +109,8 @@ instance SDecide Hosi where
 
 ---
 
+## 星取表
+
 次に星取表（星を有限個左から右へ並べたもの）を定義します．
 星取表は，``[Hosi]``すなわち``Hosi``を要素とするリストとしましょう．
 
@@ -87,7 +120,7 @@ type Hositorihyou = [Hosi]
 
 ---
 
-これも``Show``および``Read``型クラスのインスタンスにしておきましょう．
+これも``Show``および``Read``型クラスのインスタンスにしておきます．
 
 ```haskell
 instance {-# Overlapping #-} Show Hositorihyou where
@@ -105,8 +138,31 @@ instance {-# Overlapping #-} Read Hositorihyou where
 ```
 ---
 
-```haskell
+### 星取表の長さ
 
+星取表``Hositorihyou``に含まれる星の総数を星取表の長さということにしましょう．
+星取表の長さは，リストの長さで表せますが，ここでは独自に定義しておきます．
+
+```haskell
+length :: Hositorihyou -> Natural
+length = \ case
+  []   -> 0
+  h:hs -> 1 + length hs
+```
+
+---
+
+型レベル
+
+```haskell
+type family Length (hs :: Hositorihyou) where
+  Length '[]      = 'Z
+  Length (h ': t) = 'S (Length t)
+
+_length :: Sing (hs :: Hositorihyou) -> Sing (Length hs :: Nat)
+_length = \ case
+  SNil      -> SZ
+  SCons s t -> SS (_length t)
 ```
 
 ---
@@ -124,29 +180,6 @@ _      == _      = False
 ```
 
 $\alpha \equiv \beta$ $\Leftrightarrow$  Haskell上で``α == β`` $\equiv$ ``True`` 
-
----
-
-### 星取表の長さ
-
-星取表の長さは，リストの長さで表せますが，ここでは独自に定義しておきます．
-
-```haskell
-length :: Hositorihyou -> Natural
-length = \ case
-  []   -> 0
-  h:hs -> 1 + length hs
-
-ε :: [Hosi]
-ε = []
-```
-
----
-
-```
-type family Length (xs :: Hositorihyou)
-type instance Length '[] 
-```
 
 ---
 

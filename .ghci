@@ -2,6 +2,9 @@
 :set prompt ">>> "
 :set -interactive-print=Text.Show.Unicode.uprint
 :set +t
+:set -XBangPatterns
+:set -XNPlusKPatterns
+:set -XLambdaCase
 :set -XDataKinds
 :set -XFlexibleContexts
 :set -XFlexibleInstances

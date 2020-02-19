@@ -6,6 +6,7 @@ marp: true
 # シングルトン
 
 ```haskell
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE PolyKinds #-}
@@ -69,7 +70,7 @@ instance SingKind Bool where
   toSing True  = SomeSing STrue
   toSing False = SomeSing SFalse
   fromSing STrue  = True
-  fromSing SFalse = False{-# LANGUAGE TypeApplications #-}
+  fromSing SFalse = False
 
 
 instance SingI 'False where
@@ -158,7 +159,7 @@ instance SingKind Nat where
 natVal :: SomeSing Nat -> Natural
 natVal = \ case
   SomeSing SZ -> 0
-  SomeSing (SS n) ->
+  SomeSing (SS sn) -> withSomeSing (SomeSing sn) (succ . natVal . SomeSing)
 ```
 
 ---
