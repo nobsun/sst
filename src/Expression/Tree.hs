@@ -1,9 +1,8 @@
----
-marp: true
-
----
-
-```haskell
+-- ---
+-- marp: true
+-- 
+-- ---
+-- 
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE TypeFamilies #-}
 module Expression.Tree
@@ -14,24 +13,20 @@ module Expression.Tree
 import Text.ParserCombinators.ReadP
 import Data.Functor.Foldable
 
-```
----
-
-# 木
-
-
-```haskell
+-- ---
+-- 
+-- # 木
+-- 
+-- 
 data Tree
   = Leaf           -- ^ 式の生成規則 E1，● に対応 
   | Tree :^: Tree  -- ^ 式の生成規則 E2，○・α・β に対応(αおよびβは式)
   deriving (Eq)
-```
-
----
-
-``Tree``の文字列表現は以下のようにE2に対応するものは点対表現にしておきます．
-
-```haskell
+-- 
+-- ---
+-- 
+-- ``Tree``の文字列表現は以下のようにE2に対応するものは点対表現にしておきます．
+-- 
 instance Show Tree where
   showsPrec _ = \ case
     Leaf    -> ('●' :)
@@ -48,13 +43,11 @@ rLeaf = Leaf <$ char '●'
 
 rFork :: ReadP Tree
 rFork = (:^:) <$> (char '(' *> rTree <* char '.') <*> (rTree <* char ')') 
-```
-
----
-
-``Tree``の再帰図式（recursion scheme）を定義しておきます．
-
-```haskell
+-- 
+-- ---
+-- 
+-- ``Tree``の再帰図式（recursion scheme）を定義しておきます．
+-- 
 data TreeF a
   = LeafF
   | a :^^: a
@@ -76,4 +69,3 @@ instance Corecursive Tree where
   embed = \ case
     LeafF    -> Leaf
     s :^^: t -> s :^: t
-```

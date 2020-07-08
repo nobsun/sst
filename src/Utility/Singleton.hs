@@ -1,11 +1,10 @@
----
-marp: true
-
----
-
-# シングルトン
-
-```haskell
+-- ---
+-- marp: true
+-- 
+-- ---
+-- 
+-- # シングルトン
+-- 
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE DataKinds #-}
@@ -33,11 +32,9 @@ import Data.Void
 import Data.Maybe (mapMaybe)
 import Unsafe.Coerce (unsafeCoerce)
 import Numeric.Natural
-```
-
----
-
-```haskell
+-- 
+-- ---
+-- 
 data family Sing (a :: k)
 
 data SomeSing k where
@@ -55,12 +52,10 @@ class SingKind k where
 
 class SingI (a :: k) where
   sing :: Sing a
-```
----
-
-Bool
-
-```haskell
+-- ---
+-- 
+-- Bool
+-- 
 data instance Sing (a :: Bool) where
   SFalse :: Sing 'False
   STrue  :: Sing 'True
@@ -75,13 +70,11 @@ instance SingKind Bool where
 
 instance SingI 'False where
   sing = SFalse
-```
-
----
-
-Maybe
-
-```haskell
+-- 
+-- ---
+-- 
+-- Maybe
+-- 
 data instance Sing (a :: Maybe k) where
   SNothing :: Sing 'Nothing
   SJust :: Sing (a :: k) -> Sing ('Just a)
@@ -98,13 +91,11 @@ instance (k ~ Demote k, SingKind k) => SingKind (Maybe k) where
   toSing (Just a) = withSomeSing (toSing a) $ SomeSing . SJust
   fromSing SNothing  = Nothing 
   fromSing (SJust a) = Just $ fromSing a  
-```
-
----
-
-List
-
-```haskell
+-- 
+-- ---
+-- 
+-- List
+-- 
 data instance Sing (a :: [k]) where
   SNil :: Sing '[]
   SCons :: Sing (h :: k) -> Sing (t :: [k]) -> Sing (h ': t)
@@ -124,13 +115,11 @@ instance (k ~ Demote k, SingKind k) => SingKind [k] where
       SomeSing $ SCons sh st
   fromSing SNil = []
   fromSing (SCons sh st) = fromSing sh : fromSing st
-```
-
----
-
-Nat
-
-```haskell
+-- 
+-- ---
+-- 
+-- Nat
+-- 
 data Nat
   = Z
   | S Nat
@@ -152,19 +141,15 @@ instance SingKind Nat where
   toSing (S n) = withSomeSing (toSing n) (SomeSing . SS)
   fromSing SZ = Z
   fromSing (SS sn) = S (fromSing sn) 
-```
----
-
-```haskell
+-- ---
+-- 
 natVal :: SomeSing Nat -> Natural
 natVal = \ case
   SomeSing SZ -> 0
   SomeSing (SS sn) -> withSomeSing (SomeSing sn) (succ . natVal . SomeSing)
-```
-
----
-
-```haskell
+-- 
+-- ---
+-- 
 type (≡) = (:~:)
 
 data Decision a
@@ -178,10 +163,8 @@ instance (Eq (Demote k), SingKind k) => SDecide k where
   a %~ b = if fromSing a == fromSing b
     then Proved (unsafeCoerce Refl)
     else Disproved (const undefined)
-```
----
-
-```haskell
+-- ---
+-- 
 instance (SDecide a) => SDecide (Maybe a) where
   SNothing %~ SNothing = Proved Refl
   SJust a  %~ SJust b  = case a %~ b of
@@ -189,12 +172,10 @@ instance (SDecide a) => SDecide (Maybe a) where
     _           -> Disproved (const undefined)
   _        %~ _        = Disproved (const undefined) 
   
-```
----
-
-$\Sigma$ 型（依存対）
-
-```haskell
+-- ---
+-- 
+-- $\Sigma$ 型（依存対）
+-- 
 data Sigma (f :: k -> Type) where
   Sigma :: Sing a -> f a -> Sigma f
 
@@ -214,4 +195,3 @@ fromSigma (Sigma s fa)
 catSigmas :: forall k (a :: k) f. (SingI a, SDecide k)
           => [Sigma f] -> [f a]
 catSigmas = mapMaybe fromSigma
-```

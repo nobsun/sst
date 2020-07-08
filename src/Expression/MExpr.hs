@@ -1,11 +1,10 @@
----
-marp: true
-
----
-
-# M式 (meta expression)
-
-```haskell
+-- ---
+-- marp: true
+-- 
+-- ---
+-- 
+-- # M式 (meta expression)
+-- 
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
@@ -23,33 +22,27 @@ import Expression.Hosi
 import Expression.Expr
 import Expression.MSiki
 
-```
----
-
-## M式の抽象構文
-
-```haskell
+-- ---
+-- 
+-- ## M式の抽象構文
+-- 
 data MExpr
   = Var MExpr
   | Unit
   | Quote MExpr
   | Pair MExpr MExpr
   deriving (Eq)
-```
----
-
-```haskell
+-- ---
+-- 
 instance Show MExpr where
   showsPrec _ = \ case
     Var t    -> ('x' :)
     Unit     -> ("()" ++)
     Quote t  -> ("#(" ++) . shows t . (')' :)
     Pair s t -> ('(' :) . shows s . ('.' :) . shows t . (')' :) 
-```
-
----
-
-```haskell
+-- 
+-- ---
+-- 
 instance Read MExpr where
   readsPrec _ = readP_to_S rMExpr
 
@@ -67,13 +60,11 @@ rQuote = Quote <$> (string "#(" *> rMExpr <* char ')')
 
 rPair :: ReadP MExpr
 rPair = Pair <$> (char '(' *> rMExpr <* char '.') <*> (rMExpr <* char ')')
-```
-
----
-
-### M式の再帰図式
-
-```haskell
+-- 
+-- ---
+-- 
+-- ### M式の再帰図式
+-- 
 data MExprF a
   = VarF a
   | UnitF
@@ -88,11 +79,9 @@ instance Functor MExprF where
     PairF x y -> PairF (f x) (f y)
 
 type instance Base MExpr = MExprF
-```
-
----
-
-```haskell
+-- 
+-- ---
+-- 
 instance Recursive MExpr where
   project = \ case 
     Var x    -> VarF x
@@ -106,13 +95,11 @@ instance Corecursive MExpr where
     UnitF     -> Unit
     QuoteF t  -> Quote t
     PairF s t -> Pair s t    
-```
-
----
-
-### M式の具象構文とM式の抽象構文との相互変換
-
-```haskell
+-- 
+-- ---
+-- 
+-- ### M式の具象構文とM式の抽象構文との相互変換
+-- 
 fromMExpr :: MExpr -> MSiki (Siki Hositorihyou)
 fromMExpr = cata phi
   where
@@ -130,11 +117,9 @@ fromMExpr' = cata phi
       UnitF     -> Leaf :^: Leaf
       QuoteF t  -> t :^: Leaf
       PairF s t -> s :^: t 
-```
-
----
-
-```haskell
+-- 
+-- ---
+-- 
 toMExpr :: MSiki (Siki Hositorihyou) -> MExpr
 toMExpr = \ case
   ms -> toMExpr' (toExpr (unmsiki ms))
@@ -150,13 +135,11 @@ toMExpr' = ana psi
         _       -> case t of
           Leaf    -> QuoteF s
           _       -> PairF s t
-```
-
----
-
-### M式の大きさ
-
-```haskell
+-- 
+-- ---
+-- 
+-- ### M式の大きさ
+-- 
 size :: MExpr -> Natural
 size = cata phi
   where
@@ -165,13 +148,11 @@ size = cata phi
       UnitF     -> 0
       QuoteF t  -> succ t
       PairF s t -> succ (s + t)
-```
-
----
-
-### リストの具象構文
-
-```haskell
+-- 
+-- ---
+-- 
+-- ### リストの具象構文
+-- 
 newtype MEList a = MEList a
 
 unmelist :: MEList a -> a
@@ -183,26 +164,22 @@ _L1 = MEList _M2
 _L2 :: MSiki (Siki Hositorihyou)
     -> MEList (MSiki (Siki Hositorihyou)) -> MEList (MSiki (Siki Hositorihyou))
 _L2 h t = MEList (_M4 h (unmelist t)) 
-```
-
----
-
-### リストの抽象構文
-
-```haskell
+-- 
+-- ---
+-- 
+-- ### リストの抽象構文
+-- 
 data List a 
   = Nil
   | Cons a (List a)
   deriving (Eq)
 
 type instance Base (List a) = F.ListF a
-```
-
----
-
-### リストの再帰図式
-
-```haskell
+-- 
+-- ---
+-- 
+-- ### リストの再帰図式
+-- 
 instance Recursive (List MExpr) where
   project = \ case
     Nil      -> F.Nil
@@ -212,13 +189,11 @@ instance Corecursive (List MExpr) where
   embed = \ case
     F.Nil      -> Nil
     F.Cons s l -> Cons s l  
-```
-
----
-
-リストかどうかの判定
-
-```haskell
+-- 
+-- ---
+-- 
+-- リストかどうかの判定
+-- 
 isList :: MExpr -> Bool
 isList = cata phi
   where
@@ -226,11 +201,9 @@ isList = cata phi
       UnitF     -> True
       PairF _ t -> t
       _         -> False
-```
-
----
-
-```haskell
+-- 
+-- ---
+-- 
 fromList :: List MExpr -> MEList (MSiki (Siki Hositorihyou))
 fromList = cata phi
   where
@@ -242,10 +215,8 @@ fromList' :: List MExpr -> MExpr
 fromList' = \ case
   Nil      -> Unit
   Cons h t -> Pair h (fromList' t)
-```
----
-
-```haskell
+-- ---
+-- 
 toList :: MEList (MSiki (Siki Hositorihyou)) -> List MExpr
 toList ls = toList' (toMExpr (unmelist ls))
 
@@ -255,16 +226,13 @@ toList' = ana psi
     psi = \ case
       Unit     -> F.Nil
       Pair h t -> F.Cons h t 
-```
-
----
-
-要素かどうか（要素であるという関係があるかどうか）の判定
-
-```haskell
+-- 
+-- ---
+-- 
+-- 要素かどうか（要素であるという関係があるかどうか）の判定
+-- 
 (∈) :: MExpr -> List MExpr -> Bool
 _ ∈ Nil      = False
 s ∈ Cons h t = s == h || s ∈ t
-```
-
----
+-- 
+-- ---
